@@ -1,0 +1,221 @@
+---
+title: "Sabrina Zhong's Midterm Project"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
+
+## Do Suicide Rates Differ Between Men and Women Around the World?
+
+## Introduction
+
+Suicide has been a serious public health concern for the past decade. There are, on average, about 132 suicides per day in the U.S. In 2021, the suicide rate after adjusting for age was 14.04 per 100,000 individuals. In the same year, men were 3.9 times more likely to die from suicide than women (1).
+
+Suicides have been linked to mental health disorders or traumatic events. Many different groups of people are more prone to suicidal behavior. Suicide rates can differ based on age, race, economic status, and many more factors. One factor that people have focused on is sex as there seems to be a higher rate of suicide in men than in women. This phenomenon is called the "gender paradox". It is believed that men have a higher risk of suicide due to gender roles imposed from society, substance abuse, financial burdens, and many more reasons (2).
+
+There are 6 different areas/parent locations included in this data set: the Americas, Eastern Mediterranean, Western Pacific, South-East Asia, Europe, and Africa. From these parent locations, a total of 183 cities/locations were included. The suicide rates were taken from 2000 to 2019 (3).
+
+The main question I want to address with this data set is whether men have a higher suicide rate than women in different continents as seen in the U.S. I hypothesize that men will have a higher rate of suicide than women in every continent.
+
+## Methods
+
+The data set was taken from the World Health Organization and downloaded as a CSV file. The data was loaded into R using the "data.table" library. Data exploration and statistical analysis was carried out using the "ggplot2" and "dplyr" packages. The original data set had 10980 rows/observations and 34 columns/variables. The variables are either integer, character, or numeric types. The columns with only "NA" values were removed, so the total number of variables after removal was 20. There were no missing values for the key variables (rate, sex, confidence intervals). There were some outlier suicide rates but they were kept in because those values were still plausible. The suicide rate values refer to suicide incidences per 100,000 people. Negative values of suicide rates that could not have been interpret-able were checked and none were found. The names of columns were changed to be more descriptive of the variable.
+
+## Code for Cleaning Up the Data Set
+
+```{r}
+library(data.table)
+library(ggplot2)
+library(dplyr)
+suicide_data <- read.csv("C:/Users/sabzh/Downloads/data.csv")
+#dim(suicide_data)
+#head(suicide_data)
+#tail(suicide_data)
+#str(suicide_data)
+
+#removing columns with NA values
+suicide_data <- suicide_data[-c(15:23, 25, 26, 28, 31, 32)]
+
+#print(unique(suicide_data$ParentLocation))
+#print(unique(suicide_data$Location))
+
+#changing names of columns
+colnames(suicide_data)[colnames(suicide_data) == "Dim1"] <- "Sex"
+colnames(suicide_data)[colnames(suicide_data) == "FactValueNumeric"] <- "Rate"
+colnames(suicide_data)[colnames(suicide_data) == "FactValueNumericLow"] <- "Rate_CI_low"
+colnames(suicide_data)[colnames(suicide_data) == "FactValueNumericHigh"] <- "Rate_CI_high"
+
+#sum(is.na(suicide_data$Rate))
+#sum(is.na(suicide_data$Rate_CI_low))
+#sum(is.na(suicide_data$Rate_CI_high))
+```
+
+## Exporatory Plots
+
+```{r}
+#histogram 
+data_female <- subset(suicide_data, suicide_data$Sex == "Male" | suicide_data$Sex == "Female")
+
+data_female %>%
+  ggplot(aes(x=Rate, fill=Sex)) +
+  geom_histogram(binwidth = 10) +
+  xlim(-10,200) +
+  xlab("Suicide Rate (per 100,000 people)") +
+  ylab("Count") +
+  ggtitle("Distribution of Suicide Rates by Sex") +
+  facet_wrap(~Sex, ncol = 1)
+
+data_female %>%
+  ggplot() +
+  geom_bar(aes(x=ParentLocation, fill=Sex)) +
+  xlab("Parent Location") +
+  ylab("Count") +
+  ggtitle("Distribution of Sex for Each Parent Location")
+```
+
+The histograms of all suicide rates for each sex in the data set shows a positively skewed distribution. The suicide rates for females peaks at the 0-10 range. The highest suicide rate for females is around 50. For males, the histogram peaks at around 20-30 incidences per 100,000 people. The highest suicide rate that can be seen on the graph is at around 100.
+
+The bar plot shows a relatively even proportion of females to males in the data set for each parent location.
+
+## Preliminary Results: Summary Statistics
+
+```{r}
+#summary statistics table
+summary_stats_sex <- suicide_data %>%
+  group_by(Sex) %>%
+  summarise(
+    Frequency = table(Sex),
+    Mean = mean(Rate),
+    Mean_Lower_CI = mean(Rate_CI_low),
+    Mean_Higher_CI = mean(Rate_CI_high),
+    Median = median(Rate),
+    SD = sd(Rate),
+    Min = min(Rate),
+    Max = max(Rate)
+  )
+
+summary_stats_sex
+
+summary_stats_location <- suicide_data %>%
+  group_by(ParentLocation, Sex) %>%
+  summarise(
+    Frequency = table(ParentLocation),
+    Mean = mean(Rate),
+    Mean_Lower_CI = mean(Rate_CI_low),
+    Mean_Higher_CI = mean(Rate_CI_high),
+    Median = median(Rate),
+    SD = sd(Rate),
+    Min = min(Rate),
+    Max = max(Rate)
+  )
+
+summary_stats_location
+```
+
+## Preliminary Results: Graphical Figures
+
+```{r}
+#boxplots
+suicide_data %>%
+  ggplot(aes(x=Sex, y=Rate)) +
+  geom_boxplot() + 
+  ylab("Suicide Rate (per 100,000 people)") +
+  ggtitle("Boxplot of Suicide Rate vs. Sex Overall")
+
+suicide_data %>%
+  ggplot(aes(x=Sex, y=Rate)) +
+  geom_boxplot() +
+  facet_wrap(~ParentLocation, nrow = 1) +
+  ggtitle("Boxplot of Suicide Rate vs. Sex by Parent Location") +
+  ylab("Suicide Rate (per 100,000 people)") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+```{r}
+#Caluclating mean suicide rate by year, location, and sex
+mean_rate <- suicide_data %>% group_by(Period, ParentLocation, Sex) %>%
+  summarize(mean_rate = mean(Rate, na.rm = T))
+
+mean_rate_location <- suicide_data %>% group_by(ParentLocation, Location, Sex) %>%
+  summarize(mean_rate = mean(Rate, na.rm = T))
+
+africa <- mean_rate_location[mean_rate_location$ParentLocation == "Africa",]
+americas <- mean_rate_location[mean_rate_location$ParentLocation == "Americas",]
+east_med <- mean_rate_location[mean_rate_location$ParentLocation == "Eastern Mediterranean",]
+west_pac <- mean_rate_location[mean_rate_location$ParentLocation == "Western Pacific",]
+se_asia <- mean_rate_location[mean_rate_location$ParentLocation == "South-East Asia",]
+europe <- mean_rate_location[mean_rate_location$ParentLocation == "Europe",]
+  
+#Scatterplot of suicide rate trend by location
+mean_rate %>%
+  ggplot(aes(x = Period, y = mean_rate, color = Sex)) +
+  geom_point() +
+  facet_wrap(~ParentLocation, nrow = 2) +
+  ylab("Mean Suicide Rate per 100,000 People") +
+  ggtitle("Suicide Rates from 2000-2019 by Parent Location")
+```
+
+```{r}
+africa %>%
+  ggplot(aes(x = Location, y = mean_rate, color = Sex)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("Mean Suicide Rate per 100,000 People") +
+  ggtitle("Mean Suicide Rate in Locations of Africa")
+
+americas %>%
+  ggplot(aes(x = Location, y = mean_rate, color = Sex)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("Mean Suicide Rate per 100,000 People") +
+  ggtitle("Mean Suicide Rate in Locations of the Americas")
+
+east_med %>%
+  ggplot(aes(x = Location, y = mean_rate, color = Sex)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("Mean Suicide Rate per 100,000 People") +
+  ggtitle("Mean Suicide Rate in Locations of Eastern Mediterranean")
+
+west_pac %>%
+  ggplot(aes(x = Location, y = mean_rate, color = Sex)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("Mean Suicide Rate per 100,000 People") +
+  ggtitle("Mean Suicide Rate in Locations of Western Pacific")
+
+se_asia %>%
+  ggplot(aes(x = Location, y = mean_rate, color = Sex)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("Mean Suicide Rate per 100,000 People") +
+  ggtitle("Mean Suicide Rate in Locations of Southeast Asia")
+
+europe %>%
+  ggplot(aes(x = Location, y = mean_rate, color = Sex)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylab("Mean Suicide Rate per 100,000 People") +
+  ggtitle("Mean Suicide Rate in Locations of Europe")
+```
+
+## Conclusion
+
+From both the summary table of the sex-specific suicide rates and the box plot of suicide rates vs. sex, it is apparent that men have a higher suicide rate per 100,000 people than females. From the summary table, the 95% confidence interval for mean suicide rate for males and females do not overlap. This suggests a statistically significant difference in suicide rates between sex. This difference can also be seen with the box plots. The interquartile range for males and females do not overlap. The males, however, do have a lot of outliers above the 4th quartile that can be skewing the data.
+
+When the boxplots are grouped by parent location, a similiar pattern can be seen. In all 6 parent locations, the median suicide rate for males is higher than females. The boxplots also show that the men in Africa have the highest median suicide rate than any other area, but also has the most outliers in their data set. The people in Eastern Mediterranean have the lowest suicide rates and the narrowest quartiles which means that the suicide rates do not vary that much from each person.
+
+The scatter plot of mean suicide rates over the period of 2000-2019 illustrates an overall decreasing trend in suicide rates. The suicide rates in Europe have the steepest negative slope. The slope of the lines in the Americas seem to have little to no decrease over the years. The scatter plot also portrays that men have the highest suicide rates each year even when the rates are decreasing.
+
+The scatter plots of mean suicide rates between sex based on locations within the parent location also show similar results as the other graphs. In every location within each parent location, the average male suicide rate is higher than the average female suicide rate. The location with the highest male suicide rate is in Kenya.
+
+Overall, the data emphasizes how males have higher suicide rates than women all around the world. This pattern is in tangent with the literature about the disparity in suicide rates between men and women. However, the data does not show what exactly is causing males to have higher suicide rates than females.
+
+Future investigations can look at what specific reason or reasons causes the disparity in suicide rate. Figuring out the reasons can allow people to make an effort to address what is causing men to be at higher risk of suicide and hopefully decrease suicide rates. Future investigations could also analyze why suicide rates differ between parent locations. For example, the trend that Africa has the highest suicide rates can be looked into further and why there was a slight increase in suicide rates between 2005 and 2010. Cultural differences between parent locations can play a role in why suicide rates differ and could give insight to how people can help decrease suicide rates based on each parent location's differences.
+
+## References
+
+1.  <https://afsp.org/suicide-statistics/#:~:text=Additional%20facts%20about%20suicide%20in,are%20132%20suicides%20per%20day.>
+2.  <https://journals.sagepub.com/doi/10.1177/15579883221123853?icid=int.sj-full-text.similar-articles.7>
+3.  <https://www.who.int/data/gho/data/themes/mental-health/suicide-rates>

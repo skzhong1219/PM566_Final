@@ -23,6 +23,51 @@ colnames(suicide_data)[colnames(suicide_data) == "FactValueNumericHigh"] <- "Rat
 #sum(is.na(suicide_data$Rate_CI_low))
 #sum(is.na(suicide_data$Rate_CI_high))
 
+#Population dataset
+americas <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117131806.csv")
+
+americas_pop <- americas %>% group_by(Time) %>%
+  summarize(population = sum(Value, na.rm = T))
+americas_pop$ParentLocation <- "Americas"
+
+se_asia <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117133455.csv")
+
+se_asia_pop <- se_asia %>% group_by(Time) %>%
+  summarize(population = sum(Value, na.rm = T))
+se_asia_pop$ParentLocation <- "South-East Asia"
+
+europe <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117133425.csv")
+
+europe_pop <- europe %>% group_by(Time) %>%
+  summarize(population = sum(Value, na.rm = T))
+europe_pop$ParentLocation <- "Europe"
+
+western_pacific <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117134846.csv")
+
+west_pac_pop <- western_pacific %>% group_by(Time) %>%
+  summarize(population = sum(Value, na.rm = T))
+west_pac_pop$ParentLocation <- "Western Pacific"
+
+eastern_mediterranean <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117135921.csv")
+
+east_med_pop <- eastern_mediterranean %>% group_by(Time) %>%
+  summarize(population = sum(Value, na.rm = T))
+east_med_pop$ParentLocation <- "Eastern Mediterranean"
+
+africa_pop <- read.csv("C:/Users/sabzh/OneDrive/Desktop/africa.csv")
+
+
+all_pop <- rbind(americas_pop, se_asia_pop, europe_pop, west_pac_pop, east_med_pop, africa_pop)
+
+suicide_data <- merge(
+  x     = suicide_data,      
+  y     = all_pop, 
+  by.x  = c("ParentLocation", "Period"),
+  by.y  = c("ParentLocation", "Time"), 
+  all.x = TRUE,      
+  all.y = FALSE
+)
+
 #histogram 
 data_female <- subset(suicide_data, suicide_data$Sex == "Male" | suicide_data$Sex == "Female")
 
@@ -90,7 +135,9 @@ suicide_data %>%
 
 #Caluclating mean suicide rate by year, location, and sex
 mean_rate <- suicide_data %>% group_by(Period, ParentLocation, Sex) %>%
-  summarize(mean_rate = mean(Rate, na.rm = T))
+  summarize(mean_rate = mean(Rate, na.rm = T), 
+            mean_rate_lower = mean(Rate_CI_low, na.rm = T),
+            mean_rate_upper = mean(Rate_CI_high, na.rm = T))
 
 mean_rate_location <- suicide_data %>% group_by(ParentLocation, Location, Sex) %>%
   summarize(mean_rate = mean(Rate, na.rm = T))
@@ -151,4 +198,26 @@ europe %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   ylab("Mean Suicide Rate per 100,000 People") +
   ggtitle("Mean Suicide Rate in Locations of Europe")
+
+
+#Interactive Maps
+overall_mean_rate <- suicide_data %>% group_by(ParentLocation, Sex) %>%
+  summarize(mean_rate = mean(Rate, na.rm = T), 
+            mean_rate_lower = mean(Rate_CI_low, na.rm = T),
+            mean_rate_upper = mean(Rate_CI_high, na.rm = T),
+            population = mean(population, na.rm = T))
+
+p1_scatter <- overall_mean_rate %>% 
+  plot_ly(x = ~Sex, y = ~mean_rate,
+          type = 'scatter', mode = 'markers', color = ~ParentLocation,
+          size = ~population, sizes = c(5, 30), marker = list(sizemode='diameter', opacity=0.5),
+          hoverinfo = 'text',
+          text = ~paste( paste(ParentLocation, ":", sep = ""), 
+                         paste(" Rate per 100k: ", round(mean_rate, 2), " (", round(mean_rate_lower, 2), ", ", 
+                               round(mean_rate_upper, 2), ") ", sep = ""), sep = "<br>")) %>%
+  layout(title = "Population-normalized COVID-19 deaths vs. population density",
+         yaxis = list(title = "Suicide Rate per 100k"), xaxis = list(title = "Parent Location"),
+         hovermode = "compare")
+
+p1_scatter
 

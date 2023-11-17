@@ -47,6 +47,6 @@ source(file = "suicide_data.R")
 ```
 
 ```{r}
-boxplot1
+p1_scatter
 ```
 
