@@ -1,0 +1,10 @@
+name: "my-website"
+output_dir: "docs"
+navbar:
+  title: "Sabrina Zhong's PM566 Final Project"
+  left:
+    - text: "Home"
+      href: index.html
+output:
+  html_document:
+    theme: cosmo
