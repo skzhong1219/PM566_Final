@@ -42,7 +42,7 @@ opts_chunk$set(
 ```
 
 
-```{r}
+```{r load-data}
 source(file = "suicide_data.R")
 ```
 

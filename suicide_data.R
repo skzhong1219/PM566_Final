@@ -24,38 +24,43 @@ colnames(suicide_data)[colnames(suicide_data) == "FactValueNumericHigh"] <- "Rat
 #sum(is.na(suicide_data$Rate_CI_high))
 
 #Population dataset
-americas <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117131806.csv")
+americas <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231122113006.csv")
 
+#dim(americas)
+#str(americas)
 americas_pop <- americas %>% group_by(Time) %>%
   summarize(population = sum(Value, na.rm = T))
 americas_pop$ParentLocation <- "Americas"
 
-se_asia <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117133455.csv")
+se_asia <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231122113349.csv")
 
+#dim(se_asia)
 se_asia_pop <- se_asia %>% group_by(Time) %>%
   summarize(population = sum(Value, na.rm = T))
 se_asia_pop$ParentLocation <- "South-East Asia"
 
-europe <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117133425.csv")
+europe <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231122114135.csv")
 
 europe_pop <- europe %>% group_by(Time) %>%
   summarize(population = sum(Value, na.rm = T))
 europe_pop$ParentLocation <- "Europe"
 
-western_pacific <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117134846.csv")
+western_pacific <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231122114558.csv")
 
 west_pac_pop <- western_pacific %>% group_by(Time) %>%
   summarize(population = sum(Value, na.rm = T))
 west_pac_pop$ParentLocation <- "Western Pacific"
 
-eastern_mediterranean <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231117135921.csv")
+eastern_mediterranean <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231122114952.csv")
 
 east_med_pop <- eastern_mediterranean %>% group_by(Time) %>%
   summarize(population = sum(Value, na.rm = T))
 east_med_pop$ParentLocation <- "Eastern Mediterranean"
 
-africa_pop <- read.csv("C:/Users/sabzh/OneDrive/Desktop/africa.csv")
-
+africa <- read.csv("C:/Users/sabzh/Downloads/unpopulation_dataportal_20231122112154.csv")
+africa_pop <- africa %>% group_by(Time) %>%
+  summarize(population = sum(Value, na.rm = T))
+africa_pop$ParentLocation <- "Africa"
 
 all_pop <- rbind(americas_pop, se_asia_pop, europe_pop, west_pac_pop, east_med_pop, africa_pop)
 
