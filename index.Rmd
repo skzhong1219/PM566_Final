@@ -42,11 +42,23 @@ opts_chunk$set(
 ```
 
 
-```{r load-data}
+```{r load-data, echo = FALSE}
 source(file = "suicide_data.R")
 ```
-
-```{r}
+## Scatterplot of Suicide Rate vs. Sex
+```{r p1, echo = FALSE}
 p1_scatter
 ```
+<br>
 
+## Suicide Rate Trends from 2000-2019 {.tabset}
+
+### Males
+```{r p2_males, echo = FALSE}
+p2_male_scatter
+```
+### Females
+```{r p2_females, echo = FALSE}
+p2_female_scatter
+```
+## {-}

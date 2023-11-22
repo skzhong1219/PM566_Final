@@ -1,6 +1,7 @@
 library(data.table)
 library(ggplot2)
 library(dplyr)
+library(plotly)
 suicide_data <- read.csv("C:/Users/sabzh/Downloads/data.csv")
 #dim(suicide_data)
 #head(suicide_data)
@@ -218,11 +219,32 @@ p1_scatter <- overall_mean_rate %>%
           size = ~population, sizes = c(5, 30), marker = list(sizemode='diameter', opacity=0.5),
           hoverinfo = 'text',
           text = ~paste( paste(ParentLocation, ":", sep = ""), 
-                         paste(" Rate per 100k: ", round(mean_rate, 2), " (", round(mean_rate_lower, 2), ", ", 
+                         paste(" Suicide Rate per 100k: ", round(mean_rate, 2), " (", round(mean_rate_lower, 2), ", ", 
                                round(mean_rate_upper, 2), ") ", sep = ""), sep = "<br>")) %>%
-  layout(title = "Population-normalized COVID-19 deaths vs. population density",
-         yaxis = list(title = "Suicide Rate per 100k"), xaxis = list(title = "Parent Location"),
+  layout(title = "Suicide Rate per 100k vs. Sex by Parent Location",
+         yaxis = list(title = "Suicide Rate per 100k"), xaxis = list(title = "Sex"),
          hovermode = "compare")
 
 p1_scatter
 
+p2_male_scatter <- mean_rate %>% filter(Sex == "Male") %>%
+  plot_ly(x = ~Period, y = ~mean_rate, color = ~ParentLocation, type = "scatter", mode = "lines+markers",
+          hoverinfo = 'text',
+          text = ~paste(paste(ParentLocation, ":", sep=""), 
+                        paste("Year: ", Period, sep=""),
+                        paste(" Suicide Rate per 100k: ", round(mean_rate, 2), " (", round(mean_rate_lower, 2), ", ", 
+                              round(mean_rate_upper, 2), ") ", sep = ""), sep = "<br>")) %>%
+  layout(title = "Male Suicide Rate per 100k in Each Parent Location by Year", xaxis = list(title = "Year"),
+        yaxis = list(title = "Suicide Rate per 100k"), hovermode = 'compare')
+p2_male_scatter
+
+p2_female_scatter <- mean_rate %>% filter(Sex == "Female") %>%
+  plot_ly(x = ~Period, y = ~mean_rate, color = ~ParentLocation, type = "scatter", mode = "lines+markers",
+          hoverinfo = 'text',
+          text = ~paste(paste(ParentLocation, ":", sep=""), 
+                        paste("Year: ", Period, sep=""),
+                        paste(" Suicide Rate per 100k: ", round(mean_rate, 2), " (", round(mean_rate_lower, 2), ", ", 
+                              round(mean_rate_upper, 2), ") ", sep = ""), sep = "<br>")) %>%
+  layout(title = "Female Suicide Rate per 100k in Each Parent Location by Year", xaxis = list(title = "Year"),
+         yaxis = list(title = "Suicide Rate per 100k"), hovermode = 'compare')
+p2_female_scatter
