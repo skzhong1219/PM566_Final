@@ -51,7 +51,7 @@ colnames(suicide_data)[colnames(suicide_data) == "FactValueNumericHigh"] <- "Rat
 #sum(is.na(suicide_data$Rate_CI_high))
 ```
 
-## Exporatory Plots
+## Exploratory Plots
 
 ```{r}
 #histogram 
