@@ -7,7 +7,7 @@ output:
         toc_float: TRUE
 ---
 
-This is my PM566 Final Project website.
+This is my PM566 Final Project website. This project focuses on the gender paradox in suicide rates. The gender paradox is the disparity in suicide rates between men and women where men have higher rates of suicide. Through my research, it was apparent that the gender paradox is an ongoing problem in the U.S. However, I also wanted to see whether the same trend can be seen in other parts of the world. I used suicide rate data from the World Health Organization as well as population data from the United Nations' Populations Division. 
 
 ```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
 library(data.table)
@@ -45,11 +45,15 @@ opts_chunk$set(
 ```{r load-data, echo = FALSE}
 source(file = "suicide_data.R")
 ```
+The interactive scatter plot below illustrates the suicide rates per 100k persons by sex. The size of the points correspond to the size of the population of the parent location. The points are colored by each parent location. Overall, it seems that Africa has a relatively small population, but also the highest suicide rates in each category. The suicide rates for men in each parent location is higher than the women for the same parent location. 
+
 ## Scatterplot of Suicide Rate vs. Sex
 ```{r p1, echo = FALSE}
 p1_scatter
 ```
 <br>
+
+The interactive scatter plots below illustrate the change in suicide rates from 2000-2019. The first tab shows the suicide rate trend for males whereas the second tab shows the suicide rate trend for females. Each line is color coded by the trend for each parent location. Overall, there seems to be a decreasing trend in suicide rates for both men and women. Again, Africa has the highest suicide rates each year for both sexes. Males in the Eastern Mediterranean have the lowest suicide rates per year. Females in the Eastern Mediterranean and Americas have the lowest suicide rates per year. The suicide rates for women never reach as high as the suicide rates for men. 
 
 ## Suicide Rate Trends from 2000-2019 {.tabset}
 
@@ -62,3 +66,4 @@ p2_male_scatter
 p2_female_scatter
 ```
 ## {-}
+
