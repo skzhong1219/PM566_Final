@@ -7,7 +7,7 @@ output:
         toc_float: TRUE
 ---
 
-This is my PM566 Final Project website. This project focuses on the gender paradox in suicide rates. The gender paradox is the disparity in suicide rates between men and women where men have higher rates of suicide. Through my research, it was apparent that the gender paradox is an ongoing problem in the U.S. However, I also wanted to see whether the same trend can be seen in other parts of the world. I used suicide rate data from the World Health Organization as well as population data from the United Nations' Populations Division. 
+This is my PM566 Final Project website. This project focuses on the gender paradox in suicide rates. The gender paradox is the disparity in suicide rates between men and women where men have higher rates of suicide. Through my research, it was apparent that the gender paradox is an ongoing problem in the U.S. However, I also wanted to see whether the same trend can be seen in other parts of the world. I used suicide rate data from the World Health Organization as well as population data from the United Nations' Populations Division. The full written report can be downloaded at the bottom of the page.
 
 ```{r setup, message=FALSE, echo=FALSE, warning=FALSE}
 library(data.table)
@@ -69,4 +69,4 @@ p2_female_scatter
 
 Click the link below to download the full report:
 <br>
-[Download PDF](PM566_Final.pdf)
+[Download PDF](PM566_Final_Report.pdf)
