@@ -206,7 +206,7 @@ europe %>%
   ggtitle("Mean Suicide Rate in Locations of Europe")
 
 
-#Interactive Maps
+#Interactive Maps for Website
 overall_mean_rate <- suicide_data %>% group_by(ParentLocation, Sex) %>%
   summarize(mean_rate = mean(Rate, na.rm = T), 
             mean_rate_lower = mean(Rate_CI_low, na.rm = T),

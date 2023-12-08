@@ -43,7 +43,7 @@ opts_chunk$set(
 
 
 ```{r load-data, echo = FALSE}
-source(file = "suicide_data.R")
+source(file = "source_code.R")
 ```
 The interactive scatter plot below illustrates the suicide rates per 100k persons by sex. The size of the points correspond to the size of the population of the parent location. The points are colored by each parent location. Overall, it seems that Africa has a relatively small population, but also the highest suicide rates in each category. The suicide rates for men in each parent location is higher than the women for the same parent location. 
 
@@ -67,3 +67,6 @@ p2_female_scatter
 ```
 ## {-}
 
+Click the link below to download the full report:
+<br>
+[Download PDF](PM566_Final.pdf)
